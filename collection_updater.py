@@ -7,6 +7,7 @@ import requests
 import configparser
 import xml.etree.ElementTree as ET
 from plexapi.server import PlexServer
+# noinspection PyUnresolvedReferences,PyUnresolvedReferences,PyUnresolvedReferences
 from progress.bar import Bar
 import time
 
@@ -16,7 +17,7 @@ import time
 
 ini_name = 'settings.ini'
 
-if(not os.path.isfile(ini_name)):
+if not os.path.isfile(ini_name):
     print('Could not find settings.ini')
 
 ini = configparser.ConfigParser()
@@ -70,6 +71,7 @@ PLEX_IMAGES = '%s/library/metadata/%%s/%%s?url=%%s' % PLEX_SERVER
 PLEX_COLLECTIONS = '%s/library/sections/%%s/all?type=18' % PLEX_SERVER
 PLEX_COLLECTIONS_ITEMS = '%s/library/metadata/%%s/children' % PLEX_SERVER
 
+
 ##########################################################################
 # main function
 ##########################################################################
@@ -100,7 +102,7 @@ def main():
                 plex_section.key).ljust(
                 4,
                 ' '),
-                plex_section.title))
+             plex_section.title))
         section_dict[plex_section.key] = plex_section.title
 
     print(''.ljust(80, '='))
@@ -168,13 +170,13 @@ def main():
                 plex_col_title = plex_col_dict['title'] + ' Collection'
 
             if tmdb_col_dict['name'] != plex_col_title:
-                print ('Match 1 failed')
+                print('Match 1 failed')
             elif tmdb_col_dict['name'] != plex_col_dict['title']:
-                print ('Match 2 failed')
+                print('Match 2 failed')
             else:
                 print(tmdb_col_dict['name'], hash(tmdb_col_dict['name']))
-                print(plex_col_title,  hash(plex_col_title))
-                print(plex_col_dict['title'],  hash(plex_col_dict['title']))
+                print(plex_col_title, hash(plex_col_title))
+                print(plex_col_dict['title'], hash(plex_col_dict['title']))
                 print(
                     '  Invalid collection, does not match with the TMDB collection: %s' %
                     tmdb_col_dict['name'])
@@ -188,7 +190,7 @@ def main():
             # get collection images
             tmdb_col_img_dict = GetTMDBData(
                 TMDB_COLLECTION_IMG %
-                (tmdb_col_id))
+                tmdb_col_id)
 
             print(
                 '  Found a total of %s posters and %s backgrounds.' %
@@ -246,6 +248,7 @@ def main():
 
     print('\r\nFinished updating libraries.')
 
+
 ##########################################################################
 
 
@@ -253,6 +256,7 @@ def GetPlexData(url):
     r = requests.get(url, headers=HEADERS)
     col_movies = ET.fromstring(r.text)
     return col_movies
+
 
 ##########################################################################
 
@@ -268,6 +272,7 @@ def GetPlexPosterUrl(plex_url):
             url = dict['key']
             return url[url.index('?url=') + 5:]
 
+
 ##########################################################################
 
 
@@ -278,7 +283,7 @@ def UploadImagesToPlex(url_list, plex_col_id, image_type, image_type_name):
         bar = Bar('  Uploading %s:' % image_type_name, max=len(url_list))
 
         for background_url in url_list:
-            #print( '  Uploading: %s' % background_url)
+            # print( '  Uploading: %s' % background_url)
             bar.next()
             r = requests.post(
                 PLEX_IMAGES %
@@ -304,6 +309,7 @@ def UploadImagesToPlex(url_list, plex_col_id, image_type, image_type_name):
              plex_main_image),
             data=payload,
             headers=HEADERS)
+
 
 ##########################################################################
 
@@ -335,7 +341,7 @@ def GetTMDBCollectionID(plex, mov_in_col_xml):
         movie_dict = GetTMDBData(TMDB_MOVIE % (movie_id, lang))
 
         if movie_dict and 'belongs_to_collection' in movie_dict and movie_dict[
-                'belongs_to_collection'] is not None:
+            'belongs_to_collection'] is not None:
             col_id = movie_dict['belongs_to_collection']['id']
             print(
                 '  Retrieved collection id: %s (from: %s id: %s language: %s)' %
@@ -343,6 +349,7 @@ def GetTMDBCollectionID(plex, mov_in_col_xml):
             return col_id, lang
 
     return -1, ''
+
 
 ##########################################################################
 
@@ -368,6 +375,7 @@ def GetTMDBData(url):
                 print('Error fetching JSON from The Movie Database: %s' % url)
         break
 
+
 ##########################################################################
 
 
@@ -388,7 +396,7 @@ def GetImages(img_dict, conf_dict, type, lang, artwork_item_limit):
             # preference)
             if PREF_LOCAL_ART and poster['iso_639_1'] == lang:
                 img_dict[type][i]['vote_average'] = poster['vote_average'] + 1
-                #poster['vote_average'] = poster['vote_average'] + 1
+                # poster['vote_average'] = poster['vote_average'] + 1
 
             i += 1
 
@@ -403,6 +411,7 @@ def GetImages(img_dict, conf_dict, type, lang, artwork_item_limit):
                     poster['file_path'])
 
     return result
+
 
 ##########################################################################
 
